@@ -39,6 +39,7 @@ class OuestFranceParser(html.parser.HTMLParser):
             elif attrs["class"] == "teaser" and "itemprop" in attrs and \
                         attrs["itemprop"] == "description":
                 self.data_handler = self.handle_summary
+                self.is_handling_data = True
 
     def handle_startli(self, attrs):
         if "class" in attrs and attrs["class"] == "uneAnn cf":
