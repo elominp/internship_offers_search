@@ -17,7 +17,13 @@ class IndeedParser(html.parser.HTMLParser):
                                   "span": self.handle_startspan}
         self.next_starthandler = None
         self.next_pages = []
+        self.is_handling_data = False
         super().__init__()
+
+    def handle_endtag(self, tag):
+        if tag == "span" and self.is_handling_data is True:
+            self.is_handling_data = False
+            self.data_handler = None
 
     def handle_starttag(self, tag, attrs):
         if tag in self.starttag_handlers:
@@ -52,11 +58,13 @@ class IndeedParser(html.parser.HTMLParser):
                 self.data_handler = self.handle_organisation
             elif attrs["itemprop"] == "description":
                 self.data_handler = self.handle_summary
+                self.is_handling_data = True
 
     def handle_data(self, data):
         if self.data_handler is not None:
             self.data_handler(data)
-            self.data_handler = None
+            if self.is_handling_data is False:
+                self.data_handler = None
 
     def handle_organisation(self, data):
         self.offer_entry["organisation"] = data.replace("\n", "").strip()
