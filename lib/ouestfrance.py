@@ -17,7 +17,13 @@ class OuestFranceParser(html.parser.HTMLParser):
                                   "meta": self.handle_startmeta}
         self.next_starthandler = None
         self.next_pages = []
+        self.is_handling_data = False
         super().__init__()
+
+    def handle_endtag(self, tag):
+        if tag == "div" and self.is_handling_data is True:
+            self.is_handling_data = False
+            self.data_handler = None
 
     def handle_starttag(self, tag, attrs):
         if tag in self.starttag_handlers:
@@ -55,13 +61,17 @@ class OuestFranceParser(html.parser.HTMLParser):
     def handle_data(self, data):
         if self.data_handler is not None:
             self.data_handler(data)
-            self.data_handler = None
+            if self.is_handling_data is False:
+                self.data_handler = None
 
     def handle_date(self, data):
         self.offer_entry["date"] = data
 
     def handle_summary(self, data):
-        self.offer_entry["summary"] = data
+        if "summary" not in self.offer_entry:
+            self.offer_entry["summary"] = data
+        else:
+            self.offer_entry["summary"] = self.offer_entry["summary"] + data
 
 
 def parse_ouest_france_offers():
