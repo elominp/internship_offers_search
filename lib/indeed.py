@@ -70,7 +70,10 @@ class IndeedParser(html.parser.HTMLParser):
         self.offer_entry["organisation"] = data.replace("\n", "").strip()
 
     def handle_summary(self, data):
-        self.offer_entry["summary"] = data
+        if "summary" not in self.offer_entry:
+            self.offer_entry["summary"] = data
+        else:
+            self.offer_entry["summary"] = self.offer_entry["summary"] + data
 
 
 def parse_indeed_offers():
