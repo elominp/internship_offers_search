@@ -82,7 +82,8 @@ def parse_letudiant_offers():
     offer_entries = offer_entries + parser.offer_entries
     for next_url in next_urls:
         parser = LEtudiantParser()
-        letudiant_connection = http.client.HTTPConnection("jobs-stages.letudiant.fr")
+        letudiant_connection = http.client.HTTPConnection(
+                "jobs-stages.letudiant.fr")
         letudiant_connection.connect()
         letudiant_connection.request("GET", next_url)
         letudiant_response = letudiant_connection.getresponse()
